@@ -1,8 +1,8 @@
 package com.teb.hotelservice.service;
 
-import com.teb.hotelservice.dto.HotelDto;
-import com.teb.hotelservice.request.BookingRequest;
-import com.teb.hotelservice.request.GetHotelsRequest;
+import com.teb.hotelservice.model.dto.HotelDto;
+import com.teb.hotelservice.model.request.BookingRequest;
+import com.teb.hotelservice.model.request.GetOffersRequest;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public interface HotelService {
 
     HotelDto book(BookingRequest bookingRequest, String id);
 
-    List<HotelDto> findHotelsByRoomAvailability(GetHotelsRequest getHotelsRequest);
+    List<HotelDto> findHotelsByRoomAvailability(GetOffersRequest getHotelsRequest);
 
     List<HotelDto> findBookingsByUserId(int userId);
 }

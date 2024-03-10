@@ -1,12 +1,12 @@
 package com.teb.hotelservice.service.impl;
 
-import com.teb.hotelservice.dto.HotelDto;
-import com.teb.hotelservice.entity.Booking;
-import com.teb.hotelservice.entity.Hotel;
+import com.teb.hotelservice.model.dto.HotelDto;
+import com.teb.hotelservice.model.entity.Booking;
+import com.teb.hotelservice.model.entity.Hotel;
 import com.teb.hotelservice.mapper.HotelMapper;
 import com.teb.hotelservice.repository.HotelRepository;
-import com.teb.hotelservice.request.BookingRequest;
-import com.teb.hotelservice.request.GetHotelsRequest;
+import com.teb.hotelservice.model.request.BookingRequest;
+import com.teb.hotelservice.model.request.GetOffersRequest;
 import com.teb.hotelservice.service.HotelService;
 import com.teb.hotelservice.util.Utils;
 import jakarta.ws.rs.NotFoundException;
@@ -79,9 +79,9 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public List<HotelDto> findHotelsByRoomAvailability(GetHotelsRequest getHotelsRequest) {
-        List<Hotel> allHotels = hotelRepository.findByLocation_LocationId(getHotelsRequest.getLocationId());
-        List<LocalDate> bookedDates = Utils.generateDatesBetween(getHotelsRequest.getFrom(), getHotelsRequest.getTo());
+    public List<HotelDto> findHotelsByRoomAvailability(GetOffersRequest getOffersRequest) {
+        List<Hotel> allHotels = hotelRepository.findByLocation_LocationId(getOffersRequest.getLocationId());
+        List<LocalDate> bookedDates = Utils.generateDatesBetween(getOffersRequest.getFrom(), getOffersRequest.getTo());
 
         return allHotels.stream()
                 .filter(hotel -> hotel.getRooms().stream()

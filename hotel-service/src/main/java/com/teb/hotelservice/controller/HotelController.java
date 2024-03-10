@@ -1,8 +1,8 @@
 package com.teb.hotelservice.controller;
 
-import com.teb.hotelservice.dto.HotelDto;
-import com.teb.hotelservice.request.BookingRequest;
-import com.teb.hotelservice.request.GetHotelsRequest;
+import com.teb.hotelservice.model.dto.HotelDto;
+import com.teb.hotelservice.model.request.BookingRequest;
+import com.teb.hotelservice.model.request.GetOffersRequest;
 import com.teb.hotelservice.service.HotelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +17,13 @@ public class HotelController {
 
     private final HotelService hotelService;
 
-    @GetMapping()
-    public List<HotelDto> findAll(@RequestBody GetHotelsRequest getHotelsRequest) {
-        return hotelService.findHotelsByRoomAvailability(getHotelsRequest);
+    @PostMapping("/all")
+    public List<HotelDto> findAll(@RequestBody GetOffersRequest getOffersRequest) {
+        return hotelService.findHotelsByRoomAvailability(getOffersRequest);
     }
 
     @GetMapping("/{id}")
     public HotelDto findById(@PathVariable String id) {
-        System.out.println(hotelService.findBookingsByUserId(1));
         return hotelService.findById(id);
     }
 
@@ -43,7 +42,7 @@ public class HotelController {
         hotelService.delete(id);
     }
 
-    @PatchMapping("book/{id}")
+    @PutMapping("/book/{id}")
     public HotelDto book(@RequestBody BookingRequest bookingRequest, @PathVariable String id) {
         return hotelService.book(bookingRequest, id);
     }

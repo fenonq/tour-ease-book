@@ -1,17 +1,18 @@
-package com.teb.hotelservice.dto;
+package com.teb.teborchestrator.model.dto.hotel;
 
-import com.teb.hotelservice.entity.Location;
-import com.teb.hotelservice.entity.Review;
-import com.teb.hotelservice.entity.Room;
+import com.teb.teborchestrator.model.enums.VendorType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class HotelDto {
     private String id;
+    private VendorType vendorType = VendorType.HOTEL;
     private String name;
     private Location location;
     private String address;

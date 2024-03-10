@@ -1,7 +1,7 @@
 package com.teb.hotelservice.mapper;
 
-import com.teb.hotelservice.dto.HotelDto;
-import com.teb.hotelservice.entity.Hotel;
+import com.teb.hotelservice.model.dto.HotelDto;
+import com.teb.hotelservice.model.entity.Hotel;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

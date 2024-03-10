@@ -1,4 +1,4 @@
-package com.teb.hotelservice.request;
+package com.teb.hotelservice.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +9,9 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetHotelsRequest {
-    private int locationId;
+public class BookingRequest {
+    private int roomId;
+    private int userId;
     private LocalDate from;
     private LocalDate to;
 }

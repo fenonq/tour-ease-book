@@ -1,5 +1,6 @@
-package com.teb.hotelservice.entity;
+package com.teb.hotelservice.model.entity;
 
+import com.teb.hotelservice.model.enums.VendorType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ public class Hotel {
 
     @Id
     private String id;
+    private VendorType vendorType = VendorType.HOTEL;
     private String name;
     private Location location;
     private String address;

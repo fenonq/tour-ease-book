@@ -1,4 +1,4 @@
-package com.teb.hotelservice.entity;
+package com.teb.hotelservice.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

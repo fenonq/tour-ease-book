@@ -1,4 +1,4 @@
-package com.teb.hotelservice.entity;
+package com.teb.teborchestrator.model.dto.hotel;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,3 +14,4 @@ public class Booking {
     private int userId;
     private List<LocalDate> bookedDays;
 }
+

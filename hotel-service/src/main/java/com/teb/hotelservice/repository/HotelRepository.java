@@ -1,6 +1,6 @@
 package com.teb.hotelservice.repository;
 
-import com.teb.hotelservice.entity.Hotel;
+import com.teb.hotelservice.model.entity.Hotel;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
