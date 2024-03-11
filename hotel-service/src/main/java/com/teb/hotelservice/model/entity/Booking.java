@@ -11,6 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Booking {
-    private int userId;
+    private String userId;
     private List<LocalDate> bookedDays;
 }

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class BookingRequest {
     private int roomId;
-    private int userId;
+    private String userId;
     private LocalDate from;
     private LocalDate to;
 }

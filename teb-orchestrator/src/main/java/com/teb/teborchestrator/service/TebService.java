@@ -1,6 +1,6 @@
 package com.teb.teborchestrator.service;
 
-import com.teb.teborchestrator.model.entity.Order;
+import com.teb.teborchestrator.model.dto.OrderDto;
 import com.teb.teborchestrator.model.request.CreateOrderRequest;
 import com.teb.teborchestrator.model.request.GetOffersRequest;
 
@@ -10,6 +10,8 @@ public interface TebService {
 
     List<?> findAll(GetOffersRequest getOffersRequest);
 
-    Order<?> createOrder(CreateOrderRequest createOrderRequest);
+    OrderDto createOrder(CreateOrderRequest createOrderRequest);
+
+    List<OrderDto> findUserOrders();
 
 }
