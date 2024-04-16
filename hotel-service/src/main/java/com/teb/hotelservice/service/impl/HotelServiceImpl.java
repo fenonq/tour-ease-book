@@ -1,12 +1,13 @@
 package com.teb.hotelservice.service.impl;
 
-import com.teb.hotelservice.model.dto.HotelDto;
-import com.teb.hotelservice.model.entity.Booking;
-import com.teb.hotelservice.model.entity.Hotel;
 import com.teb.hotelservice.mapper.HotelMapper;
-import com.teb.hotelservice.repository.HotelRepository;
+import com.teb.hotelservice.model.dto.HotelDto;
+import com.teb.hotelservice.model.entity.BookedDay;
+import com.teb.hotelservice.model.entity.Hotel;
+import com.teb.hotelservice.model.entity.Room;
 import com.teb.hotelservice.model.request.BookingRequest;
 import com.teb.hotelservice.model.request.GetOffersRequest;
+import com.teb.hotelservice.repository.HotelRepository;
 import com.teb.hotelservice.service.HotelService;
 import com.teb.hotelservice.util.Utils;
 import jakarta.ws.rs.NotFoundException;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -67,15 +69,42 @@ public class HotelServiceImpl implements HotelService {
     public HotelDto book(BookingRequest bookingRequest, String id) {
         log.info("Booking room {} of hotel {}..", bookingRequest.getRoomId(), id);
         Hotel hotel = hotelRepository.findById(id).orElseThrow(NotFoundException::new);
-        List<LocalDate> bookedDates = Utils.generateDatesBetween(bookingRequest.getFrom(), bookingRequest.getTo());
-        hotel.getRooms().stream()
+
+        Room roomToBook = hotel.getRooms().stream()
                 .filter(room -> room.getRoomId() == bookingRequest.getRoomId())
                 .findFirst()
-                .orElseThrow(NotFoundException::new)
-                .getBookings()
-                .add(new Booking(bookingRequest.getUserId(), bookedDates));
-        Hotel hotelToReturn = hotelRepository.save(hotel);
-        return HotelMapper.INSTANCE.mapHotelToHotelDto(hotelToReturn);
+                .orElseThrow(NotFoundException::new);
+
+        List<LocalDate> bookedDates = Utils.generateDatesBetween(bookingRequest.getFrom(), bookingRequest.getTo());
+
+        boolean isRoomAvailable = bookedDates.stream()
+                .noneMatch(date -> roomToBook.getBookedDays().stream()
+                        .filter(bookedDay -> bookedDay.getDate().isEqual(date))
+                        .mapToLong(bookedDay -> bookedDay.getUserIds().size())
+                        .sum() >= roomToBook.getNumberOfRooms());
+
+        if (isRoomAvailable) {
+            List<LocalDate> existingDates = roomToBook.getBookedDays().stream()
+                    .map(BookedDay::getDate)
+                    .toList();
+
+            for (LocalDate date : bookedDates) {
+                if (existingDates.contains(date)) {
+                    BookedDay existingBookedDay = roomToBook.getBookedDays().stream()
+                            .filter(bookedDay -> bookedDay.getDate().equals(date))
+                            .findFirst()
+                            .orElseThrow(NotFoundException::new);
+                    existingBookedDay.getUserIds().add(bookingRequest.getUserId());
+                } else {
+                    roomToBook.getBookedDays().add(new BookedDay(date, Collections.singletonList(bookingRequest.getUserId())));
+                }
+            }
+            Hotel bookedHotel = hotelRepository.save(hotel);
+            return HotelMapper.INSTANCE.mapHotelToHotelDto(bookedHotel);
+        } else {
+//            throw new RoomNotAvailableException("Room is not available for booking.");
+            throw new NotFoundException("Room is not available for booking.");
+        }
     }
 
     @Override
@@ -85,9 +114,11 @@ public class HotelServiceImpl implements HotelService {
 
         return allHotels.stream()
                 .filter(hotel -> hotel.getRooms().stream()
-                        .noneMatch(room -> room.getBookings().stream()
-                                .flatMap(booking -> booking.getBookedDays().stream())
-                                .anyMatch(bookedDates::contains)))
+                        .anyMatch(room -> room.getNumberOfRooms() >= bookedDates.stream()
+                                .flatMap(date -> room.getBookedDays().stream()
+                                        .filter(bookedDay -> bookedDay.getDate().isEqual(date))
+                                        .flatMap(bookedDay -> bookedDay.getUserIds().stream()))
+                                .count()))
                 .map(HotelMapper.INSTANCE::mapHotelToHotelDto)
                 .toList();
     }

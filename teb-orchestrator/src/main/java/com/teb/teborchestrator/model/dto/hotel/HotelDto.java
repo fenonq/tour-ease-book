@@ -19,6 +19,7 @@ public class HotelDto implements Offer {
     private String address;
     private String description;
     private List<String> amenities;
+    private List<Media> mediaList;
     private List<Room> rooms;
     private List<Review> reviews;
 }

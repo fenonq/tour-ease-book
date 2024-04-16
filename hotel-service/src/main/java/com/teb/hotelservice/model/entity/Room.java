@@ -13,6 +13,8 @@ public class Room {
     private int roomId;
     private String roomType;
     private int capacity;
+    private int numberOfRooms;
     private double price;
-    private List<Booking> bookings;
+    private List<Bed> beds;
+    private List<BookedDay> bookedDays;
 }

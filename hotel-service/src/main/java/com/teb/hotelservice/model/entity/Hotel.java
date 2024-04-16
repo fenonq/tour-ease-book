@@ -24,6 +24,7 @@ public class Hotel {
     private String address;
     private String description;
     private List<String> amenities = new ArrayList<>();
+    private List<Media> mediaList = new ArrayList<>();
     private List<Room> rooms = new ArrayList<>();
     private List<Review> reviews = new ArrayList<>();
 }

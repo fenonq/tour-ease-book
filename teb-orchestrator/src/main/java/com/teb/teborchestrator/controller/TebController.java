@@ -20,7 +20,7 @@ public class TebController {
 
     private final TebService tebService;
 
-    @GetMapping("/getOffers") // todo probably can cause error, change to POST
+    @PostMapping("/getOffers") // todo probably can cause error, change to POST
     public List<?> findAllOffers(@RequestBody GetOffersRequest getOffersRequest) {
         return tebService.findAll(getOffersRequest);
     }

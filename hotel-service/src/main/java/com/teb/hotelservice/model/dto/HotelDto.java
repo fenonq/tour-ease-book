@@ -1,6 +1,7 @@
 package com.teb.hotelservice.model.dto;
 
 import com.teb.hotelservice.model.entity.Location;
+import com.teb.hotelservice.model.entity.Media;
 import com.teb.hotelservice.model.entity.Review;
 import com.teb.hotelservice.model.entity.Room;
 import com.teb.hotelservice.model.enums.VendorType;
@@ -21,6 +22,7 @@ public class HotelDto {
     private String address;
     private String description;
     private List<String> amenities;
+    private List<Media> mediaList;
     private List<Room> rooms;
     private List<Review> reviews;
 }
