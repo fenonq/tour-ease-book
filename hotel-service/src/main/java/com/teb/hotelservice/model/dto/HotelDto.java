@@ -21,6 +21,7 @@ public class HotelDto {
     private Location location;
     private String address;
     private String description;
+    private int stars;
     private List<String> amenities;
     private List<Media> mediaList;
     private List<Room> rooms;

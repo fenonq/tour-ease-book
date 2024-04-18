@@ -13,5 +13,5 @@ public interface HotelRepository extends MongoRepository<Hotel, String> {
     List<Hotel> findByLocation_LocationId(int locationId);
 
     @Query("{'rooms.bookings.userId': ?0}")
-    List<Hotel> findByUserId(int userId);
+    List<Hotel> findByUserId(int userId); // todo
 }

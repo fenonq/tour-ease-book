@@ -23,6 +23,7 @@ public class Hotel {
     private Location location;
     private String address;
     private String description;
+    private int stars;
     private List<String> amenities = new ArrayList<>();
     private List<Media> mediaList = new ArrayList<>();
     private List<Room> rooms = new ArrayList<>();

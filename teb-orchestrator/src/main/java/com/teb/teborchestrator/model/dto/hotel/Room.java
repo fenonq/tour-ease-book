@@ -16,5 +16,4 @@ public class Room {
     private int numberOfRooms;
     private double price;
     private List<Bed> beds;
-    private List<BookedDay> bookedDays;
 }
