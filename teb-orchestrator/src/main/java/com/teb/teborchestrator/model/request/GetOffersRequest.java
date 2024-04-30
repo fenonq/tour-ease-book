@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class GetOffersRequest {
     private VendorType vendorType;
-    private int locationId;
-    private LocalDate from;
-    private LocalDate to;
+    private int location;
+    private LocalDate dateFrom;
+    private LocalDate dateTo;
 }

@@ -47,6 +47,14 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
+    public List<HotelDto> findByIdIn(List<String> ids) {
+        log.info("Finding hotels with ids {}..", ids);
+        return hotelRepository.findByIdIn(ids).stream()
+                .map(HotelMapper.INSTANCE::mapHotelToHotelDto)
+                .toList();
+    }
+
+    @Override
     public HotelDto save(HotelDto hotelDto) {
         log.info("Saving hotel with name {}", hotelDto.getName());
         Hotel hotelFromRq = HotelMapper.INSTANCE.mapHotelDtoToHotel(hotelDto);
@@ -121,8 +129,8 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public List<HotelDto> findHotelsByRoomAvailability(GetOffersRequest getOffersRequest) {
-        List<Hotel> allHotels = hotelRepository.findByLocation_LocationId(getOffersRequest.getLocationId());
-        List<LocalDate> bookedDatesFromRequest = Utils.generateDatesBetween(getOffersRequest.getFrom(), getOffersRequest.getTo());
+        List<Hotel> allHotels = hotelRepository.findByLocation_LocationId(getOffersRequest.getLocation());
+        List<LocalDate> bookedDatesFromRequest = Utils.generateDatesBetween(getOffersRequest.getDateFrom(), getOffersRequest.getDateTo());
 
         List<Booking> allBookings = bookingRepository.findAll();
 

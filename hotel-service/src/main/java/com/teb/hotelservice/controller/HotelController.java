@@ -27,6 +27,11 @@ public class HotelController {
         return hotelService.findById(id);
     }
 
+    @GetMapping("/ids/{ids}")
+    public List<HotelDto> findByIdIn(@PathVariable List<String> ids) {
+        return hotelService.findByIdIn(ids);
+    }
+
     @PostMapping
     public HotelDto save(@RequestBody HotelDto hotelDto) {
         return hotelService.save(hotelDto);

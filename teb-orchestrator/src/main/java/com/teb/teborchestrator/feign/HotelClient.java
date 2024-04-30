@@ -17,6 +17,9 @@ public interface HotelClient {
     @GetMapping("/{id}")
     HotelDto findById(@PathVariable String id);
 
+    @GetMapping("/ids/{ids}")
+    List<HotelDto> findByIdIn(@PathVariable List<String> ids);
+
     @PostMapping
     HotelDto save(@RequestBody HotelDto hotelDto);
 

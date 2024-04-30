@@ -2,6 +2,7 @@ package com.teb.teborchestrator.service.impl;
 
 import com.teb.teborchestrator.feign.HotelClient;
 import com.teb.teborchestrator.mapper.OrderMapper;
+import com.teb.teborchestrator.model.dto.Offer;
 import com.teb.teborchestrator.model.dto.OrderDto;
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.entity.Order;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -27,8 +29,18 @@ public class TebServiceImpl implements TebService {
     private final OrderRepository orderRepository;
 
     @Override
-    public List<?> findAll(GetOffersRequest getOffersRequest) {
-        return hotelClient.findAll(getOffersRequest);
+    public List<Offer> findAll(GetOffersRequest getOffersRequest) {
+        return new ArrayList<>(hotelClient.findAll(getOffersRequest));
+    }
+
+    @Override
+    public Offer findById(String id) {
+        return hotelClient.findById(id);
+    }
+
+    @Override
+    public List<Offer> findByIdIn(List<String> ids) {
+        return new ArrayList<>(hotelClient.findByIdIn(ids));
     }
 
     @Override

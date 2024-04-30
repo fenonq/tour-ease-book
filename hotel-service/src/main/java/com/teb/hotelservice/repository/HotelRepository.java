@@ -12,6 +12,8 @@ public interface HotelRepository extends MongoRepository<Hotel, String> {
 
     List<Hotel> findByLocation_LocationId(int locationId);
 
+    List<Hotel> findByIdIn(List<String> ids);
+
     @Query("{'rooms.bookings.userId': ?0}")
-    List<Hotel> findByUserId(int userId); // todo
+    List<Hotel> findByUserId(int userId); // todo change id type
 }
