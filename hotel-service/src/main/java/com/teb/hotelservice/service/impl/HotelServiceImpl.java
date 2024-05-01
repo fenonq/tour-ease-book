@@ -120,6 +120,12 @@ public class HotelServiceImpl implements HotelService {
                 }
             }
             bookingRepository.save(booking);
+
+            List<Room> filteredRooms = hotel.getRooms().stream()
+                    .filter(room -> room.getRoomId().equals(bookingRequest.getRoomId()))
+                    .toList();
+            hotel.setRooms(filteredRooms);
+
             return HotelMapper.INSTANCE.mapHotelToHotelDto(hotel);
         } else {
 //            throw new RoomNotAvailableException("Room is not available for booking.");

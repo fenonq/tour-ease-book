@@ -2,11 +2,13 @@ package com.teb.teborchestrator.service.impl;
 
 import com.teb.teborchestrator.feign.HotelClient;
 import com.teb.teborchestrator.mapper.OrderMapper;
-import com.teb.teborchestrator.model.dto.Offer;
 import com.teb.teborchestrator.model.dto.OrderDto;
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
+import com.teb.teborchestrator.model.entity.CartItem;
 import com.teb.teborchestrator.model.entity.Order;
+import com.teb.teborchestrator.model.entity.OrderedItem;
 import com.teb.teborchestrator.model.entity.User;
+import com.teb.teborchestrator.model.request.BookingRequest;
 import com.teb.teborchestrator.model.request.CreateOrderRequest;
 import com.teb.teborchestrator.model.request.GetOffersRequest;
 import com.teb.teborchestrator.repository.OrderRepository;
@@ -20,6 +22,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.teb.teborchestrator.util.Utils.getNumberOfNights;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -29,34 +33,53 @@ public class TebServiceImpl implements TebService {
     private final OrderRepository orderRepository;
 
     @Override
-    public List<Offer> findAll(GetOffersRequest getOffersRequest) {
-        return new ArrayList<>(hotelClient.findAll(getOffersRequest));
+    public List<HotelDto> findAll(GetOffersRequest getOffersRequest) {
+        return hotelClient.findAll(getOffersRequest);
     }
 
     @Override
-    public Offer findById(String id) {
+    public HotelDto findById(String id) {
         return hotelClient.findById(id);
     }
 
     @Override
-    public List<Offer> findByIdIn(List<String> ids) {
-        return new ArrayList<>(hotelClient.findByIdIn(ids));
+    public List<HotelDto> findByIdIn(List<String> ids) {
+        return hotelClient.findByIdIn(ids);
     }
 
     @Override
     public OrderDto createOrder(CreateOrderRequest createOrderRequest) {
         User user = Utils.getCurrentUser();
-        createOrderRequest.getBookingRequest().setUserId(user.getId());
+        List<OrderedItem> bookedHotels = new ArrayList<>();
 
-        HotelDto bookedHotel = hotelClient.book(
-                createOrderRequest.getBookingRequest(),
-                createOrderRequest.getCart().getCartItems().get(0).getId()
-        );
+        createOrderRequest.getCart().setUserId(user.getId());
+
+        for (CartItem item : createOrderRequest.getCart().getCartItems()) {
+            BookingRequest bookingRequest = BookingRequest.builder()
+                    .userId(user.getId())
+                    .roomId(item.getRoomId())
+                    .from(item.getDateFrom())
+                    .to(item.getDateTo())
+                    .build();
+
+            bookedHotels.add(OrderedItem.builder()
+                    .dateFrom(item.getDateFrom())
+                    .dateTo(item.getDateTo())
+                    .offer(hotelClient.book(bookingRequest, item.getOfferId()))
+                    .build());
+        }
 
         Order order = Order.builder()
-                .userId(createOrderRequest.getBookingRequest().getUserId())
-                .totalPrice(bookedHotel.getRooms().get(0).getPrice())
-                .orderedItems(List.of(bookedHotel))
+                .userId(user.getId())
+                .totalPrice(
+                        bookedHotels.stream().map(OrderedItem::getOffer).toList().stream()
+                                .flatMapToDouble(hotel -> hotel.getRooms().stream()
+                                        .mapToDouble(room -> createOrderRequest.getCart().getCartItems().stream()
+                                                .filter(cartItem -> cartItem.getOfferId().equals(hotel.getId()) && cartItem.getRoomId().equals(room.getRoomId()))
+                                                .findFirst()
+                                                .map(item -> room.getPrice() * getNumberOfNights(item.getDateFrom(), item.getDateTo()))
+                                                .orElse(0.0))).sum())
+                .orderedItems(new ArrayList<>(bookedHotels))
                 .creationDateTime(LocalDateTime.now())
                 .build();
 

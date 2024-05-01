@@ -1,6 +1,6 @@
 package com.teb.teborchestrator.model.entity;
 
-import com.teb.teborchestrator.model.enums.VendorType;
+import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,10 +12,8 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartItem {
-    private VendorType vendorType;
-    private String offerId;
-    private String roomId;
+public class OrderedItem {
     private LocalDate dateFrom;
     private LocalDate dateTo;
+    private HotelDto offer;
 }

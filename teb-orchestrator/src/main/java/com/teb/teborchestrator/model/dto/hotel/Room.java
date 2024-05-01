@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Room {
-    private int roomId;
+    private String roomId;
     private String roomType;
     private int capacity;
     private int numberOfRooms;

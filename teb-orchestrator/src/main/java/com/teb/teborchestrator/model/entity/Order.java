@@ -1,6 +1,5 @@
 package com.teb.teborchestrator.model.entity;
 
-import com.teb.teborchestrator.model.dto.Offer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +21,6 @@ public class Order {
     private String id;
     private String userId;
     private double totalPrice;
-    private List<Offer> orderedItems;
+    private List<OrderedItem> orderedItems;
     private LocalDateTime creationDateTime;
 }
