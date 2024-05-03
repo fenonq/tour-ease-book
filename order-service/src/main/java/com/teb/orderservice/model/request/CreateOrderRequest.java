@@ -1,7 +1,7 @@
-package com.teb.teborchestrator.model.request;
+package com.teb.orderservice.model.request;
 
-import com.teb.teborchestrator.model.dto.hotel.HotelDto;
-import com.teb.teborchestrator.model.entity.Cart;
+import com.teb.orderservice.model.dto.hotel.HotelDto;
+import com.teb.orderservice.model.entity.Cart;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

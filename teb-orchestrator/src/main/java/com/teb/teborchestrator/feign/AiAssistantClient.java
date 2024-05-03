@@ -1,7 +1,7 @@
 package com.teb.teborchestrator.feign;
 
-import com.teb.aiassistantservice.model.ChatResponse;
-import com.teb.aiassistantservice.model.Message;
+import com.teb.teborchestrator.model.entity.Message;
+import com.teb.teborchestrator.model.response.ChatResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

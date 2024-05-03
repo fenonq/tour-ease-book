@@ -1,6 +1,6 @@
-package com.teb.teborchestrator.model.dto.hotel;
+package com.teb.orderservice.model.dto.hotel;
 
-import com.teb.teborchestrator.model.enums.VendorType;
+import com.teb.orderservice.model.enums.VendorType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

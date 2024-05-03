@@ -1,16 +1,18 @@
 package com.teb.teborchestrator.service.impl;
 
-import com.teb.aiassistantservice.model.ChatResponse;
-import com.teb.aiassistantservice.model.Message;
 import com.teb.teborchestrator.feign.AiAssistantClient;
 import com.teb.teborchestrator.feign.HotelClient;
+import com.teb.teborchestrator.feign.OrderClient;
 import com.teb.teborchestrator.mapper.OrderMapper;
 import com.teb.teborchestrator.model.dto.OrderDto;
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
-import com.teb.teborchestrator.model.entity.*;
+import com.teb.teborchestrator.model.entity.CartItem;
+import com.teb.teborchestrator.model.entity.Message;
+import com.teb.teborchestrator.model.entity.User;
 import com.teb.teborchestrator.model.request.BookingRequest;
 import com.teb.teborchestrator.model.request.CreateOrderRequest;
 import com.teb.teborchestrator.model.request.GetOffersRequest;
+import com.teb.teborchestrator.model.response.ChatResponse;
 import com.teb.teborchestrator.repository.OrderRepository;
 import com.teb.teborchestrator.service.TebService;
 import com.teb.teborchestrator.util.Utils;
@@ -18,11 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.teb.teborchestrator.util.Utils.getNumberOfNights;
 
 @Slf4j
 @Service
@@ -30,6 +29,7 @@ import static com.teb.teborchestrator.util.Utils.getNumberOfNights;
 public class TebServiceImpl implements TebService {
 
     private final HotelClient hotelClient;
+    private final OrderClient orderClient;
     private final AiAssistantClient aiAssistantClient;
     private final OrderRepository orderRepository;
 
@@ -51,7 +51,7 @@ public class TebServiceImpl implements TebService {
     @Override
     public OrderDto createOrder(CreateOrderRequest createOrderRequest) {
         User user = Utils.getCurrentUser();
-        List<OrderedItem> bookedHotels = new ArrayList<>();
+        List<HotelDto> bookedHotels = new ArrayList<>();
 
         createOrderRequest.getCart().setUserId(user.getId());
 
@@ -63,37 +63,17 @@ public class TebServiceImpl implements TebService {
                     .to(item.getDateTo())
                     .build();
 
-            bookedHotels.add(OrderedItem.builder()
-                    .dateFrom(item.getDateFrom())
-                    .dateTo(item.getDateTo())
-                    .offer(hotelClient.book(bookingRequest, item.getOfferId()))
-                    .build());
+            bookedHotels.add(hotelClient.book(bookingRequest, item.getOfferId()));
         }
 
-        Order order = Order.builder()
-                .userId(user.getId())
-                .totalPrice(
-                        bookedHotels.stream().map(OrderedItem::getOffer).toList().stream()
-                                .flatMapToDouble(hotel -> hotel.getRooms().stream()
-                                        .mapToDouble(room -> createOrderRequest.getCart().getCartItems().stream()
-                                                .filter(cartItem -> cartItem.getOfferId().equals(hotel.getId()) && cartItem.getRoomId().equals(room.getRoomId()))
-                                                .findFirst()
-                                                .map(item -> room.getPrice() * getNumberOfNights(item.getDateFrom(), item.getDateTo()))
-                                                .orElse(0.0))).sum())
-                .orderedItems(new ArrayList<>(bookedHotels))
-                .creationDateTime(LocalDateTime.now())
-                .build();
-
-        Order orderToReturn = orderRepository.save(order);
-        return OrderMapper.INSTANCE.mapOrderToOrderDto(orderToReturn);
+        createOrderRequest.setBookedHotels(bookedHotels);
+        return orderClient.createOrder(createOrderRequest);
     }
 
     @Override
     public List<OrderDto> findUserOrders() {
         User user = Utils.getCurrentUser();
-        return orderRepository.findByUserId(user.getId()).stream()
-                .map(OrderMapper.INSTANCE::mapOrderToOrderDto)
-                .toList();
+        return orderClient.findUserOrders(user.getId());
     }
 
     @Override
