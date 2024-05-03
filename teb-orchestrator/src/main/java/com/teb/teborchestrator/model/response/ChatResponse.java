@@ -1,7 +1,6 @@
 package com.teb.teborchestrator.model.response;
 
 import com.teb.teborchestrator.model.entity.Choice;
-import com.teb.teborchestrator.model.entity.Message;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

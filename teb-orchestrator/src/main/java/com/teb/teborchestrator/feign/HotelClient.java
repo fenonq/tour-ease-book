@@ -2,17 +2,22 @@ package com.teb.teborchestrator.feign;
 
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.request.BookingRequest;
-import com.teb.teborchestrator.model.request.GetOffersRequest;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @FeignClient("HOTEL-SERVICE")
 public interface HotelClient {
 
-    @PostMapping("/all")
-    List<HotelDto> findAll(@RequestBody GetOffersRequest getOffersRequest);
+    @GetMapping("/all")
+    List<HotelDto> findAll(
+            @RequestParam int locationId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateFrom,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateTo
+    );
 
     @GetMapping("/{id}")
     HotelDto findById(@PathVariable String id);

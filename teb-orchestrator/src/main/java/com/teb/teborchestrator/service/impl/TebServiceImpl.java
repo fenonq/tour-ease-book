@@ -10,7 +10,6 @@ import com.teb.teborchestrator.model.entity.Message;
 import com.teb.teborchestrator.model.entity.User;
 import com.teb.teborchestrator.model.request.BookingRequest;
 import com.teb.teborchestrator.model.request.CreateOrderRequest;
-import com.teb.teborchestrator.model.request.GetOffersRequest;
 import com.teb.teborchestrator.model.response.ChatResponse;
 import com.teb.teborchestrator.service.TebService;
 import com.teb.teborchestrator.util.Utils;
@@ -18,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +31,8 @@ public class TebServiceImpl implements TebService {
     private final AiAssistantClient aiAssistantClient;
 
     @Override
-    public List<HotelDto> findAll(GetOffersRequest getOffersRequest) {
-        return hotelClient.findAll(getOffersRequest);
+    public List<HotelDto> findAll(int locationId, LocalDate dateFrom, LocalDate dateTo) {
+        return hotelClient.findAll(locationId, dateFrom, dateTo);
     }
 
     @Override

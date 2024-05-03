@@ -1,14 +1,12 @@
 package com.teb.hotelservice.service;
 
 import com.teb.hotelservice.model.dto.HotelDto;
-import com.teb.hotelservice.model.entity.Hotel;
 import com.teb.hotelservice.model.request.BookingRequest;
-import com.teb.hotelservice.model.request.GetOffersRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface HotelService {
-    List<HotelDto> findAll();
 
     HotelDto findById(String id);
 
@@ -22,7 +20,6 @@ public interface HotelService {
 
     HotelDto book(BookingRequest bookingRequest, String id);
 
-    List<HotelDto> findHotelsByRoomAvailability(GetOffersRequest getHotelsRequest);
+    List<HotelDto> findHotelsByRoomAvailability(int locationId, LocalDate dateFrom, LocalDate dateTo);
 
-    List<HotelDto> findBookingsByUserId(int userId);
 }

@@ -4,13 +4,13 @@ import com.teb.teborchestrator.model.dto.OrderDto;
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.entity.Message;
 import com.teb.teborchestrator.model.request.CreateOrderRequest;
-import com.teb.teborchestrator.model.request.GetOffersRequest;
 import com.teb.teborchestrator.model.response.ChatResponse;
 import com.teb.teborchestrator.service.TebService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -20,9 +20,13 @@ public class TebController {
 
     private final TebService tebService;
 
-    @PostMapping("/offers") // todo probably can cause error, change to POST
-    public List<HotelDto> findAllOffers(@RequestBody GetOffersRequest getOffersRequest) {
-        return tebService.findAll(getOffersRequest);
+    @GetMapping("/offers")
+    public List<HotelDto> findAllOffers(
+            @RequestParam int locationId,
+            @RequestParam LocalDate dateFrom,
+            @RequestParam LocalDate dateTo
+    ) {
+        return tebService.findAll(locationId, dateFrom, dateTo);
     }
 
     @GetMapping("/offers/{id}")

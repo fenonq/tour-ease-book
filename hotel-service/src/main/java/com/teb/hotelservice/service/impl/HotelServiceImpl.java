@@ -7,7 +7,6 @@ import com.teb.hotelservice.model.entity.Booking;
 import com.teb.hotelservice.model.entity.Hotel;
 import com.teb.hotelservice.model.entity.Room;
 import com.teb.hotelservice.model.request.BookingRequest;
-import com.teb.hotelservice.model.request.GetOffersRequest;
 import com.teb.hotelservice.repository.BookingRepository;
 import com.teb.hotelservice.repository.HotelRepository;
 import com.teb.hotelservice.service.HotelService;
@@ -30,14 +29,6 @@ public class HotelServiceImpl implements HotelService {
 
     private final HotelRepository hotelRepository;
     private final BookingRepository bookingRepository;
-
-    @Override
-    public List<HotelDto> findAll() {
-        log.info("Finding all hotels..");
-        return hotelRepository.findAll().stream()
-                .map(HotelMapper.INSTANCE::mapHotelToHotelDto)
-                .toList();
-    }
 
     @Override
     public HotelDto findById(String id) {
@@ -134,9 +125,9 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public List<HotelDto> findHotelsByRoomAvailability(GetOffersRequest getOffersRequest) {
-        List<Hotel> allHotels = hotelRepository.findByLocation_LocationId(getOffersRequest.getLocation());
-        List<LocalDate> bookedDatesFromRequest = Utils.generateDatesBetween(getOffersRequest.getDateFrom(), getOffersRequest.getDateTo());
+    public List<HotelDto> findHotelsByRoomAvailability(int locationId, LocalDate dateFrom, LocalDate dateTo) {
+        List<Hotel> allHotels = hotelRepository.findByLocation_LocationId(locationId);
+        List<LocalDate> bookedDatesFromRequest = Utils.generateDatesBetween(dateFrom, dateTo);
 
         List<Booking> allBookings = bookingRepository.findAll();
 
@@ -159,11 +150,4 @@ public class HotelServiceImpl implements HotelService {
                 .toList();
     }
 
-    @Override
-    public List<HotelDto> findBookingsByUserId(int userId) {
-        log.info("Finding bookings of user {}..", userId);
-        return hotelRepository.findByUserId(userId).stream()
-                .map(HotelMapper.INSTANCE::mapHotelToHotelDto)
-                .toList();
-    }
 }

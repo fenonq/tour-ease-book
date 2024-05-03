@@ -1,7 +1,6 @@
 package com.teb.orderservice.controller;
 
 import com.teb.orderservice.model.dto.OrderDto;
-import com.teb.orderservice.model.dto.hotel.HotelDto;
 import com.teb.orderservice.model.request.CreateOrderRequest;
 import com.teb.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;

@@ -2,12 +2,12 @@ package com.teb.hotelservice.controller;
 
 import com.teb.hotelservice.model.dto.HotelDto;
 import com.teb.hotelservice.model.request.BookingRequest;
-import com.teb.hotelservice.model.request.GetOffersRequest;
 import com.teb.hotelservice.service.HotelService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -17,9 +17,13 @@ public class HotelController {
 
     private final HotelService hotelService;
 
-    @PostMapping("/all")
-    public List<HotelDto> findAll(@RequestBody GetOffersRequest getOffersRequest) {
-        return hotelService.findHotelsByRoomAvailability(getOffersRequest);
+    @GetMapping("/all")
+    public List<HotelDto> findAll(
+            @RequestParam int locationId,
+            @RequestParam LocalDate dateFrom,
+            @RequestParam LocalDate dateTo
+    ) {
+        return hotelService.findHotelsByRoomAvailability(locationId, dateFrom, dateTo);
     }
 
     @GetMapping("/{id}")

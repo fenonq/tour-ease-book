@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartItem {
-    private VendorType vendorType; // todo delete
+    private VendorType vendorType;
     private String offerId;
     private String roomId;
     private LocalDate dateFrom;
