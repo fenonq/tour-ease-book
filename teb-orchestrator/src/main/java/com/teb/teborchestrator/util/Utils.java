@@ -8,12 +8,8 @@ import java.time.temporal.ChronoUnit;
 
 public class Utils {
 
-    public static User getCurrentUser() { // add error
+    public static User getCurrentUser() {
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
-
-    public static long getNumberOfNights(LocalDate dateFrom, LocalDate dateTo) {
-        return ChronoUnit.DAYS.between(dateFrom, dateTo);
     }
 
 }

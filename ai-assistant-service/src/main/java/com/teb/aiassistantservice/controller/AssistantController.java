@@ -1,41 +1,23 @@
 package com.teb.aiassistantservice.controller;
 
-import com.teb.aiassistantservice.model.ChatRequest;
 import com.teb.aiassistantservice.model.ChatResponse;
 import com.teb.aiassistantservice.model.Message;
-import jakarta.ws.rs.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+import com.teb.aiassistantservice.service.AssistantService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-public class AssistantController { // service
+@RequiredArgsConstructor
+public class AssistantController {
 
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Value("${openai.model}")
-    private String model;
-
-    @Value("${openai.api.url}")
-    private String apiUrl;
+    private final AssistantService assistantService;
 
     @PostMapping("/chat")
     public ChatResponse chat(@RequestBody List<Message> prompt) {
-        // create a request
-        ChatRequest request = new ChatRequest(model, prompt);
-
-        // call the API
-        ChatResponse response = restTemplate.postForObject(apiUrl, request, ChatResponse.class);
-
-        if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
-            throw new NotFoundException();
-        }
-
-        // return the first response
-        return response;
+        return assistantService.chat(prompt);
     }
 }

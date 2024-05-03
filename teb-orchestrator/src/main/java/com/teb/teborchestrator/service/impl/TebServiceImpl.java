@@ -3,7 +3,6 @@ package com.teb.teborchestrator.service.impl;
 import com.teb.teborchestrator.feign.AiAssistantClient;
 import com.teb.teborchestrator.feign.HotelClient;
 import com.teb.teborchestrator.feign.OrderClient;
-import com.teb.teborchestrator.mapper.OrderMapper;
 import com.teb.teborchestrator.model.dto.OrderDto;
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.entity.CartItem;
@@ -13,7 +12,6 @@ import com.teb.teborchestrator.model.request.BookingRequest;
 import com.teb.teborchestrator.model.request.CreateOrderRequest;
 import com.teb.teborchestrator.model.request.GetOffersRequest;
 import com.teb.teborchestrator.model.response.ChatResponse;
-import com.teb.teborchestrator.repository.OrderRepository;
 import com.teb.teborchestrator.service.TebService;
 import com.teb.teborchestrator.util.Utils;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +29,6 @@ public class TebServiceImpl implements TebService {
     private final HotelClient hotelClient;
     private final OrderClient orderClient;
     private final AiAssistantClient aiAssistantClient;
-    private final OrderRepository orderRepository;
 
     @Override
     public List<HotelDto> findAll(GetOffersRequest getOffersRequest) {
