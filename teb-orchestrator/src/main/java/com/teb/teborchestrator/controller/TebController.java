@@ -1,5 +1,7 @@
 package com.teb.teborchestrator.controller;
 
+import com.teb.aiassistantservice.model.ChatResponse;
+import com.teb.aiassistantservice.model.Message;
 import com.teb.teborchestrator.model.dto.OrderDto;
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.request.CreateOrderRequest;
@@ -41,6 +43,11 @@ public class TebController {
     @GetMapping("/userOrders")
     public List<OrderDto> findUserOrders() {
         return tebService.findUserOrders();
+    }
+
+    @PostMapping("/chat")
+    public ChatResponse chat(@RequestBody List<Message> prompt) {
+        return tebService.chat(prompt);
     }
 
 }

@@ -1,5 +1,7 @@
 package com.teb.teborchestrator.service;
 
+import com.teb.aiassistantservice.model.ChatResponse;
+import com.teb.aiassistantservice.model.Message;
 import com.teb.teborchestrator.model.dto.OrderDto;
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.request.CreateOrderRequest;
@@ -18,5 +20,7 @@ public interface TebService {
     OrderDto createOrder(CreateOrderRequest createOrderRequest);
 
     List<OrderDto> findUserOrders();
+
+    ChatResponse chat(List<Message> prompt);
 
 }

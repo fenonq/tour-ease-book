@@ -1,13 +1,13 @@
 package com.teb.teborchestrator.service.impl;
 
+import com.teb.aiassistantservice.model.ChatResponse;
+import com.teb.aiassistantservice.model.Message;
+import com.teb.teborchestrator.feign.AiAssistantClient;
 import com.teb.teborchestrator.feign.HotelClient;
 import com.teb.teborchestrator.mapper.OrderMapper;
 import com.teb.teborchestrator.model.dto.OrderDto;
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
-import com.teb.teborchestrator.model.entity.CartItem;
-import com.teb.teborchestrator.model.entity.Order;
-import com.teb.teborchestrator.model.entity.OrderedItem;
-import com.teb.teborchestrator.model.entity.User;
+import com.teb.teborchestrator.model.entity.*;
 import com.teb.teborchestrator.model.request.BookingRequest;
 import com.teb.teborchestrator.model.request.CreateOrderRequest;
 import com.teb.teborchestrator.model.request.GetOffersRequest;
@@ -30,6 +30,7 @@ import static com.teb.teborchestrator.util.Utils.getNumberOfNights;
 public class TebServiceImpl implements TebService {
 
     private final HotelClient hotelClient;
+    private final AiAssistantClient aiAssistantClient;
     private final OrderRepository orderRepository;
 
     @Override
@@ -93,6 +94,11 @@ public class TebServiceImpl implements TebService {
         return orderRepository.findByUserId(user.getId()).stream()
                 .map(OrderMapper.INSTANCE::mapOrderToOrderDto)
                 .toList();
+    }
+
+    @Override
+    public ChatResponse chat(List<Message> prompt) {
+        return aiAssistantClient.chat(prompt);
     }
 
 }
