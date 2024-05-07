@@ -16,6 +16,7 @@ public class CartItem {
     private VendorType vendorType;
     private String offerId;
     private String roomId;
+    private int numberOfRooms;
     private LocalDate dateFrom;
     private LocalDate dateTo;
 }

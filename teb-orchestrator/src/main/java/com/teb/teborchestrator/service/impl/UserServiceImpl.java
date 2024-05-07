@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
+    @Override
     public User create(User user) {
+        log.info("Creating user with username {}..", user.getUsername());
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("User with such username is already exist");
         }
@@ -27,12 +29,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Override
     public User getByUsername(String username) {
+        log.info("Finding user with username {}..", username);
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
     }
 
+    @Override
     public UserDetailsService userDetailsService() {
         return this::getByUsername;
     }

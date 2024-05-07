@@ -26,7 +26,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public TokenResponse signUp(SignUpRequest request) {
-        log.info("signup user with username {}", request.getUsername());
+        log.info("Signup user with username {}", request.getUsername());
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
@@ -42,7 +42,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public TokenResponse signIn(SignInRequest request) {
-        log.info("login user with username {}", request.getUsername());
+        log.info("Login user with username {}", request.getUsername());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 request.getUsername(),
                 request.getPassword()

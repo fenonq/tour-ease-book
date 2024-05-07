@@ -1,4 +1,4 @@
-package com.teb.teborchestrator.model.dto.hotel;
+package com.teb.teborchestrator.model.dto.review;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Review {
-    private String userId;
+    private String username;
     private double rating;
     private String comment;
 }

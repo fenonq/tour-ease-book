@@ -11,15 +11,14 @@ import com.teb.orderservice.repository.OrderRepository;
 import com.teb.orderservice.service.OrderService;
 import com.teb.orderservice.util.Utils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -28,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto createOrder(CreateOrderRequest createOrderRequest) {
+        log.info("Creating order..");
         List<HotelDto> bookedHotels = createOrderRequest.getBookedHotels();
         List<OrderedItem> orderedItems = getOrderedItems(createOrderRequest, bookedHotels);
 
@@ -38,12 +38,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private List<OrderedItem> getOrderedItems(CreateOrderRequest createOrderRequest, List<HotelDto> bookedHotels) {
-        Map<String, HotelDto> hotelMap = bookedHotels.stream()
-                .collect(Collectors.toMap(HotelDto::getId, Function.identity()));
         List<OrderedItem> orderedItems = new ArrayList<>();
 
         for (CartItem item : createOrderRequest.getCart().getCartItems()) {
-            HotelDto matchedHotel = hotelMap.get(item.getOfferId());
+            HotelDto matchedHotel = bookedHotels.stream()
+                    .filter(hotel -> hotel.getId().equals(item.getOfferId()) && hotel.getRooms().get(0).getRoomId().equals(item.getRoomId()))
+                    .findFirst()
+                    .orElse(null);
+
             OrderedItem orderedItem = OrderedItem.builder()
                     .dateFrom(item.getDateFrom())
                     .dateTo(item.getDateTo())
@@ -55,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
         return orderedItems;
     }
 
-    private static Order getOrder(CreateOrderRequest createOrderRequest, String userId, List<OrderedItem> orderedItems) {
+    private Order getOrder(CreateOrderRequest createOrderRequest, String userId, List<OrderedItem> orderedItems) {
         return Order.builder()
                 .userId(userId)
                 .totalPrice(
@@ -73,6 +75,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDto> findUserOrders(String userId) {
+        log.info("Finding user orders with id {}", userId);
         return orderRepository.findByUserId(userId).stream()
                 .map(OrderMapper.INSTANCE::mapOrderToOrderDto)
                 .toList();

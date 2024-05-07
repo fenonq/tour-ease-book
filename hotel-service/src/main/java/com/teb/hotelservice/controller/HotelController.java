@@ -1,16 +1,16 @@
 package com.teb.hotelservice.controller;
 
 import com.teb.hotelservice.model.dto.HotelDto;
+import com.teb.hotelservice.model.dto.ReviewsDto;
+import com.teb.hotelservice.model.entity.Review;
 import com.teb.hotelservice.model.request.BookingRequest;
 import com.teb.hotelservice.service.HotelService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class HotelController {
@@ -27,8 +27,11 @@ public class HotelController {
     }
 
     @GetMapping("/{id}")
-    public HotelDto findById(@PathVariable String id) {
-        return hotelService.findById(id);
+    public HotelDto findById(@PathVariable String id,
+                             @RequestParam LocalDate dateFrom,
+                             @RequestParam LocalDate dateTo
+    ) {
+        return hotelService.findById(id, dateFrom, dateTo);
     }
 
     @GetMapping("/ids/{ids}")
@@ -54,6 +57,11 @@ public class HotelController {
     @PutMapping("/book/{id}")
     public HotelDto book(@RequestBody BookingRequest bookingRequest, @PathVariable String id) {
         return hotelService.book(bookingRequest, id);
+    }
+
+    @PutMapping("/hotelReviews/add/{hotelId}")
+    public ReviewsDto addReview(@RequestBody Review review, @PathVariable String hotelId) {
+        return hotelService.addReview(review, hotelId);
     }
 
 }

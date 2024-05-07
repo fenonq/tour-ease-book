@@ -1,14 +1,14 @@
 package com.teb.hotelservice.service.impl;
 
 import com.teb.hotelservice.mapper.HotelMapper;
+import com.teb.hotelservice.mapper.ReviewsMapper;
 import com.teb.hotelservice.model.dto.HotelDto;
-import com.teb.hotelservice.model.entity.BookedDay;
-import com.teb.hotelservice.model.entity.Booking;
-import com.teb.hotelservice.model.entity.Hotel;
-import com.teb.hotelservice.model.entity.Room;
+import com.teb.hotelservice.model.dto.ReviewsDto;
+import com.teb.hotelservice.model.entity.*;
 import com.teb.hotelservice.model.request.BookingRequest;
 import com.teb.hotelservice.repository.BookingRepository;
 import com.teb.hotelservice.repository.HotelRepository;
+import com.teb.hotelservice.repository.ReviewsRepository;
 import com.teb.hotelservice.service.HotelService;
 import com.teb.hotelservice.util.Utils;
 import jakarta.ws.rs.NotFoundException;
@@ -17,10 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,13 +26,41 @@ import java.util.UUID;
 public class HotelServiceImpl implements HotelService {
 
     private final HotelRepository hotelRepository;
+    private final ReviewsRepository reviewsRepository;
     private final BookingRepository bookingRepository;
 
     @Override
-    public HotelDto findById(String id) {
+    public HotelDto findById(String id, LocalDate dateFrom, LocalDate dateTo) {
         log.info("Finding hotel with id {}..", id);
-        Hotel hotel = hotelRepository.findById(id).orElseThrow(NotFoundException::new);
-        return HotelMapper.INSTANCE.mapHotelToHotelDto(hotel);
+
+        List<LocalDate> bookedDatesFromRequest = Utils.generateDatesBetween(dateFrom, dateTo);
+        Hotel hotel = hotelRepository.findById(id).orElseThrow(() -> new NotFoundException("Hotel not found with id: " + id));
+
+        List<Room> availableRooms = hotel.getRooms().stream()
+                .peek(room -> {
+                    long totalBooked = bookedDatesFromRequest.stream()
+                            .mapToLong(date -> bookingRepository.findByHotelIdAndRoomId(hotel.getId(), room.getRoomId()).stream()
+                                    .flatMap(booking -> booking.getBookedDays().stream())
+                                    .filter(bookedDay -> bookedDay.getDate().isEqual(date))
+                                    .mapToLong(bookedDay -> bookedDay.getUserIds().size())
+                                    .sum())
+                            .max()
+                            .orElse(0);
+                    int availableCount = room.getNumberOfRooms() - (int) totalBooked;
+                    room.setNumberOfAvailableRooms(Math.max(0, availableCount));
+                })
+                .filter(room -> room.getNumberOfAvailableRooms() > 0)
+                .toList();
+        hotel.setRooms(availableRooms);
+
+        List<Review> reviews = reviewsRepository.findByHotelId(id)
+                .map(Reviews::getReviewList)
+                .orElseGet(Collections::emptyList);
+
+        HotelDto hotelDto = HotelMapper.INSTANCE.mapHotelToHotelDto(hotel);
+        hotelDto.setReviews(reviews);
+
+        return hotelDto;
     }
 
     @Override
@@ -57,7 +83,7 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public HotelDto update(HotelDto hotelDto, String id) {
         log.info("Updating hotel with id {}", id);
-        findById(id);
+        hotelRepository.findById(id).orElseThrow(() -> new NotFoundException("Hotel not found with id: " + id));
         Hotel hotelFromRq = HotelMapper.INSTANCE.mapHotelDtoToHotel(hotelDto);
         hotelFromRq.setId(id);
         Hotel hotelToReturn = hotelRepository.save(hotelFromRq);
@@ -119,35 +145,69 @@ public class HotelServiceImpl implements HotelService {
 
             return HotelMapper.INSTANCE.mapHotelToHotelDto(hotel);
         } else {
-//            throw new RoomNotAvailableException("Room is not available for booking.");
             throw new NotFoundException("Room is not available for booking.");
         }
     }
 
     @Override
     public List<HotelDto> findHotelsByRoomAvailability(int locationId, LocalDate dateFrom, LocalDate dateTo) {
+        log.info("Finding hotels by room availability with locationId {}, dateFrom {}, dateTo {}", locationId, dateFrom, dateTo);
         List<Hotel> allHotels = hotelRepository.findByLocation_LocationId(locationId);
         List<LocalDate> bookedDatesFromRequest = Utils.generateDatesBetween(dateFrom, dateTo);
 
-        List<Booking> allBookings = bookingRepository.findAll();
-
-        return allHotels.stream()
+        List<HotelDto> hotelsToReturn = allHotels.stream()
                 .peek(hotel -> {
                     List<Room> availableRooms = hotel.getRooms().stream()
-                            .filter(room -> room.getNumberOfRooms() >= bookedDatesFromRequest.stream()
-                                    .flatMap(date -> allBookings.stream()
-                                            .filter(booking -> booking.getHotelId().equals(hotel.getId()) && booking.getRoomId().equals(room.getRoomId()))
-                                            .flatMap(booking -> booking.getBookedDays().stream()
-                                                    .filter(bookedDay -> bookedDay.getDate().isEqual(date))
-                                                    .flatMap(bookedDay -> bookedDay.getUserIds().stream())))
-                                    .count())
-                            .toList();
-
+                            .peek(room -> {
+                                long totalBooked = bookedDatesFromRequest.stream()
+                                        .mapToLong(date -> bookingRepository.findByHotelIdAndRoomId(hotel.getId(), room.getRoomId()).stream()
+                                                .flatMap(booking -> booking.getBookedDays().stream())
+                                                .filter(bookedDay -> bookedDay.getDate().isEqual(date))
+                                                .mapToLong(bookedDay -> bookedDay.getUserIds().size())
+                                                .sum())
+                                        .max()
+                                        .orElse(0);
+                                int availableCount = room.getNumberOfRooms() - (int) totalBooked;
+                                room.setNumberOfAvailableRooms(Math.max(0, availableCount));
+                            })
+                            .filter(room -> room.getNumberOfAvailableRooms() > 0)
+                            .collect(Collectors.toList());
                     hotel.setRooms(availableRooms);
                 })
                 .filter(hotel -> !hotel.getRooms().isEmpty())
                 .map(HotelMapper.INSTANCE::mapHotelToHotelDto)
                 .toList();
+
+        List<String> hotelsToReturnIds = hotelsToReturn.stream().map(HotelDto::getId).toList();
+        List<Reviews> reviews = reviewsRepository.findByHotelIdIn(hotelsToReturnIds);
+
+        assignReviewsToHotels(hotelsToReturn, reviews);
+        return hotelsToReturn;
+    }
+
+    private void assignReviewsToHotels(List<HotelDto> hotelsToReturn, List<Reviews> allReviews) {
+        Map<String, List<Review>> reviewsMap = allReviews.stream()
+                .collect(Collectors.toMap(
+                        Reviews::getHotelId,
+                        Reviews::getReviewList,
+                        (existing, replacement) -> existing
+                ));
+
+        hotelsToReturn.forEach(hotel -> {
+            List<Review> reviews = reviewsMap.getOrDefault(hotel.getId(), new ArrayList<>());
+            hotel.setReviews(reviews);
+        });
+    }
+
+    @Override
+    public ReviewsDto addReview(Review review, String hotelId) {
+        log.info("Adding review to the hotel with id {}..", hotelId);
+        Reviews reviews = reviewsRepository.findByHotelId(hotelId).orElse(Reviews.builder()
+                .hotelId(hotelId)
+                .reviewList(new ArrayList<>())
+                .build());
+        reviews.getReviewList().add(review);
+        return ReviewsMapper.INSTANCE.mapReviewsToReviewsDto(reviewsRepository.save(reviews));
     }
 
 }

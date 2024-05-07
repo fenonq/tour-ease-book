@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Review {
-    private String userId;
+    private String username;
     private double rating;
     private String comment;
 }

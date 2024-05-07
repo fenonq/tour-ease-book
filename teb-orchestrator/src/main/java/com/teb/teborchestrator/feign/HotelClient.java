@@ -1,6 +1,8 @@
 package com.teb.teborchestrator.feign;
 
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
+import com.teb.teborchestrator.model.dto.review.Review;
+import com.teb.teborchestrator.model.dto.review.ReviewsDto;
 import com.teb.teborchestrator.model.request.BookingRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,7 +22,11 @@ public interface HotelClient {
     );
 
     @GetMapping("/{id}")
-    HotelDto findById(@PathVariable String id);
+    HotelDto findById(
+            @PathVariable String id,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateFrom,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateTo
+    );
 
     @GetMapping("/ids/{ids}")
     List<HotelDto> findByIdIn(@PathVariable List<String> ids);
@@ -36,5 +42,11 @@ public interface HotelClient {
 
     @PutMapping("/book/{id}")
     HotelDto book(@RequestBody BookingRequest bookingRequest, @PathVariable String id);
+
+    @GetMapping("/hotelReviews/{hotelId}")
+    ReviewsDto findByHotelId(@PathVariable String hotelId);
+
+    @PutMapping("/hotelReviews/add/{hotelId}")
+    ReviewsDto addReview(@RequestBody Review review, @PathVariable String hotelId);
 
 }

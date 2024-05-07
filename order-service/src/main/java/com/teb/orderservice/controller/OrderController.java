@@ -4,12 +4,10 @@ import com.teb.orderservice.model.dto.OrderDto;
 import com.teb.orderservice.model.request.CreateOrderRequest;
 import com.teb.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class OrderController {
@@ -25,6 +23,5 @@ public class OrderController {
     public List<OrderDto> findUserOrders(@PathVariable String userId) {
         return orderService.findUserOrders(userId);
     }
-
 
 }

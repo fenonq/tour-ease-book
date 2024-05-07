@@ -14,6 +14,7 @@ public class Room {
     private String roomType;
     private int capacity;
     private int numberOfRooms;
+    private int numberOfAvailableRooms;
     private double price;
     private List<Bed> beds;
 }
