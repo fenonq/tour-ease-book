@@ -1,5 +1,6 @@
 package com.teb.teborchestrator.service;
 
+import com.teb.teborchestrator.model.dto.LocationDto;
 import com.teb.teborchestrator.model.dto.OrderDto;
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.dto.review.Review;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public interface TebService {
 
-    List<HotelDto> findAll(int locationId, LocalDate dateFrom, LocalDate dateTo);
+    List<HotelDto> findAll(String locationId, LocalDate dateFrom, LocalDate dateTo);
 
     HotelDto findById(String id, LocalDate dateFrom, LocalDate dateTo);
 
@@ -28,5 +29,7 @@ public interface TebService {
     ReviewsDto findByHotelId(String hotelId);
 
     ReviewsDto addReview(Review review, String hotelId);
+
+    List<LocationDto> findAllLocations();
 
 }

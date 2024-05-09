@@ -14,6 +14,7 @@ public class HotelDto {
     private String id;
     private VendorType vendorType = VendorType.HOTEL;
     private String name;
+    private String locationId;
     private Location location;
     private String address;
     private String description;

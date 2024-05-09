@@ -1,5 +1,6 @@
 package com.teb.teborchestrator.feign;
 
+import com.teb.teborchestrator.model.dto.LocationDto;
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.dto.review.Review;
 import com.teb.teborchestrator.model.dto.review.ReviewsDto;
@@ -16,7 +17,7 @@ public interface HotelClient {
 
     @GetMapping("/all")
     List<HotelDto> findAll(
-            @RequestParam int locationId,
+            @RequestParam String locationId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateFrom,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateTo
     );
@@ -48,5 +49,11 @@ public interface HotelClient {
 
     @PutMapping("/hotelReviews/add/{hotelId}")
     ReviewsDto addReview(@RequestBody Review review, @PathVariable String hotelId);
+
+    @GetMapping("/location/all")
+    List<LocationDto> findAll();
+
+    @PostMapping("/location")
+    LocationDto save(@RequestBody LocationDto locationDto);
 
 }

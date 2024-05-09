@@ -1,8 +1,6 @@
 package com.teb.hotelservice.service;
 
 import com.teb.hotelservice.model.dto.HotelDto;
-import com.teb.hotelservice.model.dto.ReviewsDto;
-import com.teb.hotelservice.model.entity.Review;
 import com.teb.hotelservice.model.request.BookingRequest;
 
 import java.time.LocalDate;
@@ -22,8 +20,6 @@ public interface HotelService {
 
     HotelDto book(BookingRequest bookingRequest, String id);
 
-    List<HotelDto> findHotelsByRoomAvailability(int locationId, LocalDate dateFrom, LocalDate dateTo);
-
-    ReviewsDto addReview(Review review, String hotelId);
+    List<HotelDto> findHotelsByRoomAvailability(String locationId, LocalDate dateFrom, LocalDate dateTo);
 
 }

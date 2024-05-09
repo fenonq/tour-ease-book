@@ -1,5 +1,6 @@
 package com.teb.teborchestrator.controller;
 
+import com.teb.teborchestrator.model.dto.LocationDto;
 import com.teb.teborchestrator.model.dto.OrderDto;
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.dto.review.Review;
@@ -22,7 +23,7 @@ public class TebController {
 
     @GetMapping("/offers")
     public List<HotelDto> findAllOffers(
-            @RequestParam int locationId,
+            @RequestParam String locationId,
             @RequestParam LocalDate dateFrom,
             @RequestParam LocalDate dateTo
     ) {
@@ -61,6 +62,11 @@ public class TebController {
     @PutMapping("/offerReviews/add/{hotelId}")
     public ReviewsDto addReview(@RequestBody Review review, @PathVariable String hotelId) {
         return tebService.addReview(review, hotelId);
+    }
+
+    @GetMapping("/locations")
+    public List<LocationDto> findAllLocations() {
+        return tebService.findAllLocations();
     }
 
 }

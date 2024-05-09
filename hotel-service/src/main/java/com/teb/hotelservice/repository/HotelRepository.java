@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface HotelRepository extends MongoRepository<Hotel, String> {
 
-    List<Hotel> findByLocation_LocationId(int locationId);
+    List<Hotel> findByLocationId(String locationId);
 
     List<Hotel> findByIdIn(List<String> ids);
 

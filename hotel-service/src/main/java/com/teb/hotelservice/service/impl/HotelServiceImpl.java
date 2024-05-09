@@ -1,13 +1,14 @@
 package com.teb.hotelservice.service.impl;
 
 import com.teb.hotelservice.mapper.HotelMapper;
-import com.teb.hotelservice.mapper.ReviewsMapper;
+import com.teb.hotelservice.mapper.LocationMapper;
 import com.teb.hotelservice.model.dto.HotelDto;
-import com.teb.hotelservice.model.dto.ReviewsDto;
+import com.teb.hotelservice.model.dto.LocationDto;
 import com.teb.hotelservice.model.entity.*;
 import com.teb.hotelservice.model.request.BookingRequest;
 import com.teb.hotelservice.repository.BookingRepository;
 import com.teb.hotelservice.repository.HotelRepository;
+import com.teb.hotelservice.repository.LocationRepository;
 import com.teb.hotelservice.repository.ReviewsRepository;
 import com.teb.hotelservice.service.HotelService;
 import com.teb.hotelservice.util.Utils;
@@ -28,6 +29,7 @@ public class HotelServiceImpl implements HotelService {
     private final HotelRepository hotelRepository;
     private final ReviewsRepository reviewsRepository;
     private final BookingRepository bookingRepository;
+    private final LocationRepository locationRepository;
 
     @Override
     public HotelDto findById(String id, LocalDate dateFrom, LocalDate dateTo) {
@@ -60,15 +62,20 @@ public class HotelServiceImpl implements HotelService {
         HotelDto hotelDto = HotelMapper.INSTANCE.mapHotelToHotelDto(hotel);
         hotelDto.setReviews(reviews);
 
+        LocationDto locationDto = LocationMapper.INSTANCE.mapLocationToLocationDto(locationRepository.findById(hotelDto.getLocationId()).orElse(null));
+        hotelDto.setLocation(locationDto);
+
         return hotelDto;
     }
 
     @Override
     public List<HotelDto> findByIdIn(List<String> ids) {
         log.info("Finding hotels with ids {}..", ids);
-        return hotelRepository.findByIdIn(ids).stream()
+        List<HotelDto> hotelsToReturn = hotelRepository.findByIdIn(ids).stream()
                 .map(HotelMapper.INSTANCE::mapHotelToHotelDto)
                 .toList();
+        hotelsToReturn.forEach(hotel -> hotel.setLocation(LocationMapper.INSTANCE.mapLocationToLocationDto(locationRepository.findById(hotel.getLocationId()).orElse(null))));
+        return hotelsToReturn;
     }
 
     @Override
@@ -143,16 +150,19 @@ public class HotelServiceImpl implements HotelService {
                     .toList();
             hotel.setRooms(filteredRooms);
 
-            return HotelMapper.INSTANCE.mapHotelToHotelDto(hotel);
+            HotelDto hotelToReturn = HotelMapper.INSTANCE.mapHotelToHotelDto(hotel);
+            LocationDto locationDto = LocationMapper.INSTANCE.mapLocationToLocationDto(locationRepository.findById(hotelToReturn.getLocationId()).orElse(null));
+            hotelToReturn.setLocation(locationDto);
+            return hotelToReturn;
         } else {
             throw new NotFoundException("Room is not available for booking.");
         }
     }
 
     @Override
-    public List<HotelDto> findHotelsByRoomAvailability(int locationId, LocalDate dateFrom, LocalDate dateTo) {
+    public List<HotelDto> findHotelsByRoomAvailability(String locationId, LocalDate dateFrom, LocalDate dateTo) {
         log.info("Finding hotels by room availability with locationId {}, dateFrom {}, dateTo {}", locationId, dateFrom, dateTo);
-        List<Hotel> allHotels = hotelRepository.findByLocation_LocationId(locationId);
+        List<Hotel> allHotels = hotelRepository.findByLocationId(locationId);
         List<LocalDate> bookedDatesFromRequest = Utils.generateDatesBetween(dateFrom, dateTo);
 
         List<HotelDto> hotelsToReturn = allHotels.stream()
@@ -181,11 +191,13 @@ public class HotelServiceImpl implements HotelService {
         List<String> hotelsToReturnIds = hotelsToReturn.stream().map(HotelDto::getId).toList();
         List<Reviews> reviews = reviewsRepository.findByHotelIdIn(hotelsToReturnIds);
 
-        assignReviewsToHotels(hotelsToReturn, reviews);
+        setReviewsToHotels(hotelsToReturn, reviews);
+        hotelsToReturn.forEach(hotel -> hotel.setLocation(LocationMapper.INSTANCE.mapLocationToLocationDto(locationRepository.findById(hotel.getLocationId()).orElse(null))));
+
         return hotelsToReturn;
     }
 
-    private void assignReviewsToHotels(List<HotelDto> hotelsToReturn, List<Reviews> allReviews) {
+    private void setReviewsToHotels(List<HotelDto> hotelsToReturn, List<Reviews> allReviews) {
         Map<String, List<Review>> reviewsMap = allReviews.stream()
                 .collect(Collectors.toMap(
                         Reviews::getHotelId,
@@ -197,17 +209,6 @@ public class HotelServiceImpl implements HotelService {
             List<Review> reviews = reviewsMap.getOrDefault(hotel.getId(), new ArrayList<>());
             hotel.setReviews(reviews);
         });
-    }
-
-    @Override
-    public ReviewsDto addReview(Review review, String hotelId) {
-        log.info("Adding review to the hotel with id {}..", hotelId);
-        Reviews reviews = reviewsRepository.findByHotelId(hotelId).orElse(Reviews.builder()
-                .hotelId(hotelId)
-                .reviewList(new ArrayList<>())
-                .build());
-        reviews.getReviewList().add(review);
-        return ReviewsMapper.INSTANCE.mapReviewsToReviewsDto(reviewsRepository.save(reviews));
     }
 
 }

@@ -3,6 +3,7 @@ package com.teb.teborchestrator.service.impl;
 import com.teb.teborchestrator.feign.AiAssistantClient;
 import com.teb.teborchestrator.feign.HotelClient;
 import com.teb.teborchestrator.feign.OrderClient;
+import com.teb.teborchestrator.model.dto.LocationDto;
 import com.teb.teborchestrator.model.dto.OrderDto;
 import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.dto.review.Review;
@@ -33,7 +34,7 @@ public class TebServiceImpl implements TebService {
     private final AiAssistantClient aiAssistantClient;
 
     @Override
-    public List<HotelDto> findAll(int locationId, LocalDate dateFrom, LocalDate dateTo) {
+    public List<HotelDto> findAll(String locationId, LocalDate dateFrom, LocalDate dateTo) {
         log.info("Finding hotels by room availability with locationId {}, dateFrom {}, dateTo {}", locationId, dateFrom, dateTo);
         return hotelClient.findAll(locationId, dateFrom, dateTo);
     }
@@ -97,6 +98,11 @@ public class TebServiceImpl implements TebService {
         User user = Utils.getCurrentUser();
         review.setUsername(user.getUsername());
         return hotelClient.addReview(review, hotelId);
+    }
+
+    @Override
+    public List<LocationDto> findAllLocations() {
+        return hotelClient.findAll();
     }
 
 }

@@ -1,6 +1,5 @@
 package com.teb.hotelservice.model.dto;
 
-import com.teb.hotelservice.model.entity.Location;
 import com.teb.hotelservice.model.entity.Media;
 import com.teb.hotelservice.model.entity.Review;
 import com.teb.hotelservice.model.entity.Room;
@@ -18,7 +17,8 @@ public class HotelDto {
     private String id;
     private VendorType vendorType = VendorType.HOTEL;
     private String name;
-    private Location location;
+    private String locationId;
+    private LocationDto location;
     private String address;
     private String description;
     private int stars;
