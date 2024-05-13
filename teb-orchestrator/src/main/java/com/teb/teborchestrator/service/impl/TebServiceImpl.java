@@ -11,6 +11,7 @@ import com.teb.teborchestrator.model.dto.review.ReviewsDto;
 import com.teb.teborchestrator.model.entity.Message;
 import com.teb.teborchestrator.model.entity.User;
 import com.teb.teborchestrator.model.request.BookingRequest;
+import com.teb.teborchestrator.model.request.CancelOrderRequest;
 import com.teb.teborchestrator.model.request.CreateOrderRequest;
 import com.teb.teborchestrator.model.response.ChatResponse;
 import com.teb.teborchestrator.service.TebService;
@@ -71,6 +72,15 @@ public class TebServiceImpl implements TebService {
 
         createOrderRequest.setBookedHotels(bookedHotels);
         return orderClient.createOrder(createOrderRequest);
+    }
+
+    @Override
+    public OrderDto cancelOrder(CancelOrderRequest cancelOrderRequest) {
+        User user = Utils.getCurrentUser();
+        cancelOrderRequest.setUserId(user.getId());
+        OrderDto orderDto = orderClient.cancelOrder(cancelOrderRequest.getOrderId());
+        hotelClient.cancelBooking(cancelOrderRequest);
+        return orderDto;
     }
 
     @Override

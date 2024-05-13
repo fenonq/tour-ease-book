@@ -1,5 +1,6 @@
 package com.teb.orderservice.model.entity;
 
+import com.teb.orderservice.model.enums.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class Order {
 
     @Id
     private String id;
+    private OrderStatus status;
     private String userId;
     private double totalPrice;
     private List<OrderedItem> orderedItems;

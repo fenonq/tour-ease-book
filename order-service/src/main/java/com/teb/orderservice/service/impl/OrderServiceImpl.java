@@ -6,10 +6,12 @@ import com.teb.orderservice.model.dto.hotel.HotelDto;
 import com.teb.orderservice.model.entity.CartItem;
 import com.teb.orderservice.model.entity.Order;
 import com.teb.orderservice.model.entity.OrderedItem;
+import com.teb.orderservice.model.enums.OrderStatus;
 import com.teb.orderservice.model.request.CreateOrderRequest;
 import com.teb.orderservice.repository.OrderRepository;
 import com.teb.orderservice.service.OrderService;
 import com.teb.orderservice.util.Utils;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,20 @@ public class OrderServiceImpl implements OrderService {
         return OrderMapper.INSTANCE.mapOrderToOrderDto(orderToReturn);
     }
 
+    @Override
+    public OrderDto cancelOrder(String id) {
+        log.info("Cancelling order with id {}..", id);
+        Order orderToReturn = orderRepository.findById(id).orElseThrow(NotFoundException::new);
+        orderToReturn.setStatus(OrderStatus.CANCELLED);
+        return OrderMapper.INSTANCE.mapOrderToOrderDto(orderRepository.save(orderToReturn));
+    }
+
+    @Override
+    public OrderDto findById(String id) {
+        log.info("Finding order with id {}..", id);
+        return OrderMapper.INSTANCE.mapOrderToOrderDto(orderRepository.findById(id).orElseThrow(NotFoundException::new));
+    }
+
     private List<OrderedItem> getOrderedItems(CreateOrderRequest createOrderRequest, List<HotelDto> bookedHotels) {
         List<OrderedItem> orderedItems = new ArrayList<>();
 
@@ -49,6 +65,7 @@ public class OrderServiceImpl implements OrderService {
             OrderedItem orderedItem = OrderedItem.builder()
                     .dateFrom(item.getDateFrom())
                     .dateTo(item.getDateTo())
+                    .numberOfRooms(item.getNumberOfRooms())
                     .offer(matchedHotel)
                     .build();
             orderedItems.add(orderedItem);
@@ -59,6 +76,7 @@ public class OrderServiceImpl implements OrderService {
 
     private Order getOrder(CreateOrderRequest createOrderRequest, String userId, List<OrderedItem> orderedItems) {
         return Order.builder()
+                .status(OrderStatus.BOOKED)
                 .userId(userId)
                 .totalPrice(
                         orderedItems.stream().map(OrderedItem::getOffer).toList().stream()
@@ -66,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
                                         .mapToDouble(room -> createOrderRequest.getCart().getCartItems().stream()
                                                 .filter(cartItem -> cartItem.getOfferId().equals(hotel.getId()) && cartItem.getRoomId().equals(room.getRoomId()))
                                                 .findFirst()
-                                                .map(item -> room.getPrice() * Utils.getNumberOfNights(item.getDateFrom(), item.getDateTo()))
+                                                .map(item -> room.getPrice() * Utils.getNumberOfNights(item.getDateFrom(), item.getDateTo()) * item.getNumberOfRooms())
                                                 .orElse(0.0))).sum())
                 .orderedItems(new ArrayList<>(orderedItems))
                 .creationDateTime(LocalDateTime.now())

@@ -6,6 +6,7 @@ import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.dto.review.Review;
 import com.teb.teborchestrator.model.dto.review.ReviewsDto;
 import com.teb.teborchestrator.model.entity.Message;
+import com.teb.teborchestrator.model.request.CancelOrderRequest;
 import com.teb.teborchestrator.model.request.CreateOrderRequest;
 import com.teb.teborchestrator.model.response.ChatResponse;
 import com.teb.teborchestrator.service.TebService;
@@ -47,6 +48,11 @@ public class TebController {
     @PostMapping("/createOrder")
     public OrderDto createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
         return tebService.createOrder(createOrderRequest);
+    }
+
+    @PutMapping("/cancelOrder")
+    public OrderDto cancelOrder(@RequestBody CancelOrderRequest cancelOrderRequest) {
+        return tebService.cancelOrder(cancelOrderRequest);
     }
 
     @GetMapping("/userOrders")

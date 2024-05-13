@@ -15,5 +15,6 @@ import java.time.LocalDate;
 public class OrderedItem {
     private LocalDate dateFrom;
     private LocalDate dateTo;
+    private int numberOfRooms;
     private HotelDto offer;
 }

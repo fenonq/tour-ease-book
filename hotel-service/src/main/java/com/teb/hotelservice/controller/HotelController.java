@@ -2,6 +2,7 @@ package com.teb.hotelservice.controller;
 
 import com.teb.hotelservice.model.dto.HotelDto;
 import com.teb.hotelservice.model.request.BookingRequest;
+import com.teb.hotelservice.model.request.CancelOrderRequest;
 import com.teb.hotelservice.service.HotelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +56,11 @@ public class HotelController {
     @PutMapping("/book/{id}")
     public HotelDto book(@RequestBody BookingRequest bookingRequest, @PathVariable String id) {
         return hotelService.book(bookingRequest, id);
+    }
+
+    @PutMapping("/cancelBook")
+    public void cancelBooking(@RequestBody CancelOrderRequest cancelOrderRequest) {
+        hotelService.cancelBooking(cancelOrderRequest);
     }
 
 }

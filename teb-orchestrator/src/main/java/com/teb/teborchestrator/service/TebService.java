@@ -6,6 +6,7 @@ import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.dto.review.Review;
 import com.teb.teborchestrator.model.dto.review.ReviewsDto;
 import com.teb.teborchestrator.model.entity.Message;
+import com.teb.teborchestrator.model.request.CancelOrderRequest;
 import com.teb.teborchestrator.model.request.CreateOrderRequest;
 import com.teb.teborchestrator.model.response.ChatResponse;
 
@@ -21,6 +22,8 @@ public interface TebService {
     List<HotelDto> findByIdIn(List<String> ids);
 
     OrderDto createOrder(CreateOrderRequest createOrderRequest);
+
+    OrderDto cancelOrder(CancelOrderRequest cancelOrderRequest);
 
     List<OrderDto> findUserOrders();
 

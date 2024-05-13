@@ -9,6 +9,10 @@ public interface OrderService {
 
     OrderDto createOrder(CreateOrderRequest createOrderRequest);
 
+    OrderDto cancelOrder(String id);
+
+    OrderDto findById(String id);
+
     List<OrderDto> findUserOrders(String userId);
 
 }

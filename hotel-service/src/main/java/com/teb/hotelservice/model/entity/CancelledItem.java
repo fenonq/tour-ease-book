@@ -1,6 +1,5 @@
-package com.teb.teborchestrator.model.entity;
+package com.teb.hotelservice.model.entity;
 
-import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +11,10 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderedItem {
+public class CancelledItem {
     private LocalDate dateFrom;
     private LocalDate dateTo;
     private int numberOfRooms;
-    private HotelDto offer;
+    private String hotelId;
+    private String roomId;
 }

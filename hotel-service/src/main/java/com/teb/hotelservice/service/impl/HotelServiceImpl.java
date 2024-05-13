@@ -6,6 +6,7 @@ import com.teb.hotelservice.model.dto.HotelDto;
 import com.teb.hotelservice.model.dto.LocationDto;
 import com.teb.hotelservice.model.entity.*;
 import com.teb.hotelservice.model.request.BookingRequest;
+import com.teb.hotelservice.model.request.CancelOrderRequest;
 import com.teb.hotelservice.repository.BookingRepository;
 import com.teb.hotelservice.repository.HotelRepository;
 import com.teb.hotelservice.repository.LocationRepository;
@@ -156,6 +157,25 @@ public class HotelServiceImpl implements HotelService {
             return hotelToReturn;
         } else {
             throw new NotFoundException("Room is not available for booking.");
+        }
+    }
+
+    @Override
+    public void cancelBooking(CancelOrderRequest cancelOrderRequest) {
+        log.info("Cancelling bookings for order {}..", cancelOrderRequest.getOrderId());
+        for (CancelledItem cancelledItem : cancelOrderRequest.getCancelledItems()) {
+            List<LocalDate> bookedDatesFromRequest = Utils.generateDatesBetween(cancelledItem.getDateFrom(), cancelledItem.getDateTo());
+            Booking bookingToCancel = bookingRepository.findByHotelIdAndRoomId(cancelledItem.getHotelId(), cancelledItem.getRoomId()).orElseThrow(NotFoundException::new);
+            bookedDatesFromRequest.forEach(bookedDateFromRq -> bookingToCancel.getBookedDays().stream()
+                    .filter(bookedDay -> bookedDateFromRq.equals(bookedDay.getDate()))
+                    .forEach(bookedDay -> removeUserIdsFromBookedDate(bookedDay, cancelOrderRequest.getUserId(), cancelledItem.getNumberOfRooms())));
+            bookingRepository.save(bookingToCancel);
+        }
+    }
+
+    private void removeUserIdsFromBookedDate(BookedDay bookedDay, String userId, int numberOfRooms) {
+        for (int i = 0; i < numberOfRooms; i++) {
+            bookedDay.getUserIds().remove(userId);
         }
     }
 

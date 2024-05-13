@@ -5,6 +5,7 @@ import com.teb.teborchestrator.model.dto.hotel.HotelDto;
 import com.teb.teborchestrator.model.dto.review.Review;
 import com.teb.teborchestrator.model.dto.review.ReviewsDto;
 import com.teb.teborchestrator.model.request.BookingRequest;
+import com.teb.teborchestrator.model.request.CancelOrderRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +44,9 @@ public interface HotelClient {
 
     @PutMapping("/book/{id}")
     HotelDto book(@RequestBody BookingRequest bookingRequest, @PathVariable String id);
+
+    @PutMapping("/cancelBook")
+    void cancelBooking(@RequestBody CancelOrderRequest cancelOrderRequest);
 
     @GetMapping("/hotelReviews/{hotelId}")
     ReviewsDto findByHotelId(@PathVariable String hotelId);
