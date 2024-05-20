@@ -11,8 +11,6 @@ public interface OrderService {
 
     OrderDto cancelOrder(String id);
 
-    OrderDto findById(String id);
-
     List<OrderDto> findUserOrders(String userId);
 
 }

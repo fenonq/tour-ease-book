@@ -48,9 +48,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDto findById(String id) {
-        log.info("Finding order with id {}..", id);
-        return OrderMapper.INSTANCE.mapOrderToOrderDto(orderRepository.findById(id).orElseThrow(NotFoundException::new));
+    public List<OrderDto> findUserOrders(String userId) {
+        log.info("Finding user orders with id {}", userId);
+        return orderRepository.findByUserId(userId).stream()
+                .map(OrderMapper.INSTANCE::mapOrderToOrderDto)
+                .toList();
     }
 
     private List<OrderedItem> getOrderedItems(CreateOrderRequest createOrderRequest, List<HotelDto> bookedHotels) {
@@ -89,14 +91,6 @@ public class OrderServiceImpl implements OrderService {
                 .orderedItems(new ArrayList<>(orderedItems))
                 .creationDateTime(LocalDateTime.now())
                 .build();
-    }
-
-    @Override
-    public List<OrderDto> findUserOrders(String userId) {
-        log.info("Finding user orders with id {}", userId);
-        return orderRepository.findByUserId(userId).stream()
-                .map(OrderMapper.INSTANCE::mapOrderToOrderDto)
-                .toList();
     }
 
 }

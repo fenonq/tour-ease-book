@@ -30,7 +30,6 @@ public class SecurityConfig {
     private final UserService userService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    // todo add filter + antMatchers
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -43,9 +42,8 @@ public class SecurityConfig {
                     return configuration;
                 }))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/getOffers").permitAll()
                         .requestMatchers("/signUp", "/signIn").permitAll()
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
