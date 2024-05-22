@@ -1,5 +1,6 @@
 package com.teb.teborchestrator.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teb.teborchestrator.feign.AiAssistantClient;
 import com.teb.teborchestrator.feign.HotelClient;
 import com.teb.teborchestrator.feign.OrderClient;
@@ -18,8 +19,11 @@ import com.teb.teborchestrator.service.TebService;
 import com.teb.teborchestrator.util.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +33,9 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class TebServiceImpl implements TebService {
+
+    @Value("${hotels.info.path}")
+    private String pathToFile;
 
     private final HotelClient hotelClient;
     private final OrderClient orderClient;
@@ -113,6 +120,17 @@ public class TebServiceImpl implements TebService {
     @Override
     public List<LocationDto> findAllLocations() {
         return hotelClient.findAll();
+    }
+
+    @Override
+    public void writeHotelsToFile() {
+        try {
+            List<HotelDto> hotels = hotelClient.findAllHotels();
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.writeValue(new File(pathToFile), hotels);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
     }
 
 }

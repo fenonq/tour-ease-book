@@ -75,4 +75,9 @@ public class TebController {
         return tebService.findAllLocations();
     }
 
+    @GetMapping("/initInfoFile")
+    public void writeInfoToFile() {
+        tebService.writeHotelsToFile();
+    }
+
 }

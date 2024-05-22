@@ -16,6 +16,9 @@ import java.util.List;
 @FeignClient("HOTEL-SERVICE")
 public interface HotelClient {
 
+    @GetMapping("/allHotels")
+    List<HotelDto> findAllHotels();
+
     @GetMapping("/all")
     List<HotelDto> findAll(
             @RequestParam String locationId,

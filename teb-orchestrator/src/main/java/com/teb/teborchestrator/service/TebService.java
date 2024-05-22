@@ -35,4 +35,6 @@ public interface TebService {
 
     List<LocationDto> findAllLocations();
 
+    void writeHotelsToFile();
+
 }

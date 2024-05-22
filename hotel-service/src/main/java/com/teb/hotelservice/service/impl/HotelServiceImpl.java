@@ -33,6 +33,16 @@ public class HotelServiceImpl implements HotelService {
     private final LocationRepository locationRepository;
 
     @Override
+    public List<HotelDto> findAll() {
+        log.info("Finding all hotels..");
+        List<HotelDto> hotelsToReturn = hotelRepository.findAll().stream()
+                .map(HotelMapper.INSTANCE::mapHotelToHotelDto)
+                .toList();
+        hotelsToReturn.forEach(hotel -> hotel.setLocation(LocationMapper.INSTANCE.mapLocationToLocationDto(locationRepository.findById(hotel.getLocationId()).orElse(null))));
+        return hotelsToReturn;
+    }
+
+    @Override
     public HotelDto findById(String id, LocalDate dateFrom, LocalDate dateTo) {
         log.info("Finding hotel with id {}..", id);
 

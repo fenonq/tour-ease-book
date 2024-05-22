@@ -25,6 +25,11 @@ public class HotelController {
         return hotelService.findHotelsByRoomAvailability(locationId, dateFrom, dateTo);
     }
 
+    @GetMapping("/allHotels")
+    public List<HotelDto> findAllHotels() {
+        return hotelService.findAll();
+    }
+
     @GetMapping("/{id}")
     public HotelDto findById(@PathVariable String id,
                              @RequestParam LocalDate dateFrom,
