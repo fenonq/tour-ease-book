@@ -43,6 +43,7 @@ public class SecurityConfig {
                 }))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/signUp", "/signIn").permitAll()
+                        .requestMatchers("/createHotel").hasAuthority("ROLE_MANAGER")
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())

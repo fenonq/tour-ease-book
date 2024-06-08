@@ -60,6 +60,11 @@ public class TebServiceImpl implements TebService {
     }
 
     @Override
+    public HotelDto createHotel(HotelDto hotelDto) {
+        return hotelClient.save(hotelDto);
+    }
+
+    @Override
     public OrderDto createOrder(CreateOrderRequest createOrderRequest) {
         log.info("Creating order..");
         User user = Utils.getCurrentUser();

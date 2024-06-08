@@ -40,6 +40,11 @@ public class TebController {
         return tebService.findById(id, dateFrom, dateTo);
     }
 
+    @PostMapping("/createHotel")
+    public HotelDto createHotel(@RequestBody HotelDto hotelDto) {
+        return tebService.createHotel(hotelDto);
+    }
+
     @GetMapping("/cartOffersDetails/{ids}")
     public List<HotelDto> findCartOffersDetails(@PathVariable List<String> ids) {
         return tebService.findByIdIn(ids);

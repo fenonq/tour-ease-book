@@ -21,6 +21,8 @@ public interface TebService {
 
     List<HotelDto> findByIdIn(List<String> ids);
 
+    HotelDto createHotel(HotelDto hotelDto);
+
     OrderDto createOrder(CreateOrderRequest createOrderRequest);
 
     OrderDto cancelOrder(CancelOrderRequest cancelOrderRequest);
